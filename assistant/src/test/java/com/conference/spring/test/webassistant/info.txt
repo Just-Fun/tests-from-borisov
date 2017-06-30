@@ -1,0 +1,103 @@
+
+ @ComponentScan > @TestConfiguration > @Configuratin ! @ComponentScan находит даже @TestConfiguration
+ 2. @DataJpaTest > @SpringBootTest
+ 3. @DataJpaTest и @WebMvcTest должны быть в отдельных пакетах
+
+ Spring Boot Test horror
+ 1. Тестируем Вместе со Spring Boot Test
+ 2. @tolkv @lavcraft
+ 3. @jekaborisov @jeka1978
+ 4. В программе Тестирование живого приложения ● Старые подходы ○ @ContextConfiguration ○ @ContextHierarchy && @DirtiesContext ○ @ActiveProfiles ● Что нового нам приготовил Spring Boot? ○ @SpringBootTest ○ @TestConfiguration ○ @MockBean && @SpyBean && @*Beans ○ @DataJpaTest ○ @WebMvcTest ● Кэширование spring контекстов ● Шкала тестов
+ 5. Шкала Тестов Unit Component Test Microservice Test System Test ➯ ➯ ➯ ➯
+ 6. Дано Чат поддержки разработчиков assistant yegor256-assistant jbaruch-assistant Queue мы web rest rest rest Default Answers Database
+ 7. Эксперты
+ 8. Дано Чат поддержки разработчиков assistant yegor256-assistant jbaruch-assistant Queue мы web rest rest rest Default Answers Database
+ 9. А давайте тестировать
+ 10. А давайте тестировать router yegor256-assistant jbaruch-assistant Default Answers Database Yegor256 Resolver $tokens.yegor256 JBaruch Resolver ... $tokens.jbaruch
+ 11. А давайте тестировать. Тест #1 1. Пишем Egor256WordsFrequencyResolverTest.
+ 12. А давайте тестировать. Тест #1 1. Пишем Egor256WordsFrequencyResolverTest. 2. Как ни крути, но нужен более “интеграционный тест”
+ 13. Шкала Тестов Unit ➯
+ 14. Шкала Тестов Unit Component Test ➯ ➯
+ 15. 1. Пишем TextBasedQuestionTypeResolverTest А давайте тестировать. Тест #2
+ 16. Шкала Тестов Unit Component Test ➯ ➯
+ 17. 1. Пишем TextBasedQuestionTypeResolverTest 2. Вручную создаем три бина для тестирования TextBasedQuestionTypeResolver на примере Барух vs Егор кейса А давайте тестировать. Тест #2
+ 18. 1. Пишем TextBasedQuestionTypeResolverTest 2. Вручную создаем три бина для тестирования TextBasedQuestionTypeResolver на примере Барух vs Егор кейса 3. Все падает потому что не подтягивается application.yml 4. @PropertySource … А давайте тестировать. Тест #2
+ 19. @SpringApplicationConfiguration(classes = ....class, initializers = YamlFileApplicationContextInitializer.class) public class OurTest { @Test public test(){ ... } } А давайте тестировать. Тест #2
+ 20. Spring Boot обновки 1. @SpringBootTest 2. @TestConfiguration 3. @MockBean && @SpyBean 4. @DataJpaTest 5. @MockMvcTest
+ 21. Углубляемся в Spring. Тест #2 1. Применяем @SpringBootTest
+ 22. Углубляемся в Spring. Тест #2 1. Применяем @SpringBootTest 2. Долго… 3. @SpringBootTest(classes = ...class)
+ 23. Углубляемся в Spring. Тест #2 1. Применяем @SpringBootTest 2. Долго… 3. @SpringBootTest(classes = ...class) 4. Стало быстрее
+ 24. Углубляемся в Spring. Тест #2 1. Применяем @SpringBootTest 2. Долго… 3. @SpringBootTest(classes = ...class) 4. Стало быстрее 5. С кэшированием конфигураций – еще быстрее
+ 25. Углубляемся в Spring. Тест #2 @ContextHierarchy({ @ContextConfiguration(classes=WordsCommonConfiguration.class), @ContextConfiguration(classes= ...class) })
+ 26. Углубляемся в Spring. Тест #2 @ContextHierarchy({ @ContextConfiguration(classes=WordsCommonConfiguration.class), @ContextConfiguration(classes=....class) }) Порядок важен! Т.к другая конфигурация использует бины из WordsCommonConfiguration
+ 27. Но ничего не закешировалось. Тест #2
+ 28. Но ничего не закешировалось. Тест #2 @SpringBootTest – должен быть везде
+ 29. Но ничего не закешировалось. Тест #2 @SpringBootTest – должен быть везде @Import – должен быть нигде
+ 30. Но ничего не закешировалось. Тест #2 @SpringBootTest – должен быть везде @Import – должен быть нигде @ActiveProfiles – один на всех
+ 31. Но ничего не закешировалось. Тест #2 @SpringBootTest – должен быть везде @Import – должен быть нигде @ActiveProfiles – один на всех SpringBootTest .properties – должны быть одинаковые
+ 32. Но ничего не закешировалось. Тест #2 @SpringBootTest – должен быть везде @Import – должен быть нигде @ActiveProfiles – один на всех SpringBootTest .properties – должны быть одинаковые Порядок важен! Любая перестановка – cache miss
+ 33. Но ничего не закешировалось. Тест #2 @SpringBootTest(properties={"a=b","b=a"}) @SpringBootTest(properties={"b=a","a=b"})
+ 34. Но ничего не закешировалось. Тест #2 @SpringBootTest(properties={"a=b","b=a"}) @SpringBootTest(properties={"b=a","a=b"}) Кэш не сработает
+ 35. Но ничего не закешировалось. Тест #2 @SpringBootTest – должен быть везде @Import – должен быть нигде @ActiveProfiles – один на всех SpringBootTest .properties – должны быть одинаковые
+ 36. Хрупкий кэш Все может привести к потере кэша
+ 37. Пользуемся силой logging.level.org.springframework.test.context.cache=debug
+ 38. Б – безопасность @SpringBootTest @ActiveProfiles("yegor_vs_jbaruch") public abstract class ResolversAbstractCommonConfiguration { }
+ 39. А если наоборот?
+ 40. А если наоборот? @DirtiesContext(...)
+ 41. А если наоборот? @DirtiesContext(...) methodMode() default MethodMode.AFTER_METHOD classMode() default ClassMode.AFTER_CLASS ...
+ 42. Проверим наши знания. Тест #3 1. протестируем AnswerCacheServiceJPABackend
+ 43. Spring Boot обновки 1. @SpringBootTest 2. @MockBean && @SpyBean 3. @TestConfiguration 4. @DataJpaTest 5. @MockMvcTest
+ 44. Синергия с Mockito 1. @MockBean/@SpyBean 2. @PostConstruct для настройки 3. @Bean для настройки конкретных моков
+ 45. 1. Запустим все тесты Все ли хорошо?
+ 46. 1. Запустим все тесты 2. DeveloperAssistantApplicationTests.contextLoad падает Все ли хорошо?
+ 47. 1. Запустим все тесты 2. DeveloperAssistantApplicationTests.contextLoad падает 3. Загрузил бины из другого теста! Все ли хорошо?
+ 48. Spring Boot обновки 1. @SpringBootTest 2. @MockBean && @SpyBean 3. @TestConfiguration 4. @DataJpaTest 5. @MockMvcTest
+ 49. 1. Запустим все тесты 2. DeveloperAssistantApplicationTests.contextLoad падает 3. Загрузил бины из другого теста! 4. @TestConfiguration! Все ли хорошо?
+ 50. 1. Не сканируется @SpringBootTest 2. Не сканируется другими конфигурациями и тестами 3. Не прерывает процесс сканирования @SpringBootTest @TestConfiguration
+ 51. 1. Запустим все тесты 2. DeveloperAssistantApplicationTests.contextLoad падает 3. Загрузил бины из другого теста! 4. @TestConfiguration! 5. DeveloperAssistantApplicationTests.contextLoad работает Все ли хорошо?
+ 52. 1. Запустим все тесты 2. DeveloperAssistantApplicationTests.contextLoad падает 3. Загрузил бины из другого теста! 4. @TestConfiguration! 5. DeveloperAssistantApplicationTests.contextLoad работает 6. А AnswerCacheServiceJPABackendTest перестал 7. Загрузил бины из другого теста! Все ли хорошо?
+ 53. 1. Как @SpringBootTest сканирует пакеты
+ 54. Два процесса сканирования 1. @SpringBootTest сканирование 2. @SpringBootApplication (@ComponentScan)
+ 55. Два процесса сканирования 1. @SpringBootTest сканирование 2. @SpringBootApplication (@ComponentScan) Вверх
+ 56. Два процесса сканирования 1. @SpringBootTest сканирование 2. @SpringBootApplication (@ComponentScan) Вниз Вверх
+ 57. @SpringBootTest Два процесса сканирования
+ 58. @SpringBootTest Два процесса сканирования
+ 59. @SpringBootTest Два процесса сканирования
+ 60. Два процесса сканирования @SpringBootTest
+ 61. Два процесса сканирования @SpringBootTest test classpath extends main classpath
+ 62. Два процесса сканирования @SpringBootTest @SpringBootApplication src/main будет так же просканирован* test classpath extends main classpath
+ 63. Два процесса сканирования @SpringBootTest @SpringBootApplication src/main будет так же просканирован* test classpath extends main classpath
+ 64. Два процесса сканирования @SpringBootTest @SpringBootApplication src/main будет так же просканирован* test classpath extends main classpath
+ 65. Два процесса сканирования @SpringBootTest @SpringBootApplication src/main будет так же просканирован* test classpath extends main classpath
+ 66. Два процесса сканирования @SpringBootTest @SpringBootApplication src/main будет так же просканирован* test classpath extends main classpath
+ 67. Тоже и с src/main/**
+ 68. 1. Запустим все тесты 2. DeveloperAssistantApplicationTests.contextLoad падает 3. Загрузил бины из другого теста! 4. @TestConfiguration! 5. DeveloperAssistantApplicationTests.contextLoad работает 6. А AnswerCacheServiceJPABackendTest перестал 7. Загрузил бины из другого теста! 8. @SpringBootConfiguration остановит сканирование Все ли хорошо?
+ 69. @SpringBootConfiguration public class StopConfiguration { } Чиним
+ 70. Component Tests
+ 71. Spring Boot обновки 1. @SpringBootTest 2. @TestConfiguration 3. @MockBean && @SpyBean 4. @DataJpaTest 5. @MockMvcTest
+ 72. @DataJpaTest 1. сканирует все репозитории
+ 73. @DataJpaTest 1. сканирует все репозитории 2. конфигурирует EntityManager 3. загружает другие конфигурации
+ 74. 1. сканирует все репозитории 2. конфигурирует EntityManager 3. загружает другие конфигурации 4. фильтрует все не относящееся к Data/JPA Применим знания @DataJpaTest
+ 75. Тестируем DefaultAssistantJpaBackendTest 1. @DataJpaTest не загружает компоненты Spring
+ 76. Тестируем DefaultAssistantJpaBackendTest 1. @DataJpaTest не загружает компоненты Spring 2. Делаем конфигурацию, загружаем недостающее
+ 77. Тестируем DefaultAssistantJpaBackendTest 1. @DataJpaTest не загружает компоненты Spring 2. Делаем конфигурацию, загружаем недостающее 3. Ничего не работает, из за @SpringBootConfiguration
+ 78. Тестируем DefaultAssistantJpaBackendTest 1. @DataJpaTest не загружает компоненты Spring 2. Делаем конфигурацию, загружаем недостающее 3. Ничего не работает, из за @SpringBootConfiguration 4. Переносим в новый package – все @*Test тесты должны быть изолированы
+ 79. @WebMvcTest 1. Не грузит компоненты спринга
+ 80. @WebMvcTest 1. Не грузит компоненты спринга 2. Грузит только то что относится к Web
+ 81. @WebMvcTest 1. Не грузит компоненты спринга 2. Грузит только то что относится к Web 3. Сразу изолируем в отдельный пакет Получаем суперспособность: @Autowired MockMvc mockMvc;
+ 82. Где настраивать @MockBean 1. В @*Configuration – если мок нужен на этапе создания контекста 2. В тесте (@Before/setup/etc) если мок нужен только на этапе выполнения теста
+ 83. Что же делает @SpringBootTest 1. Без classes a. сканирует со своего пакета “вверх” в поисках @SpringBootConfiguration i. игнорирует остальных b. падает если не находит или находит несколько в одном пакете 2. classes=~@Configuration a. поднимет только указанные конфигурации 3. classes=~@TestConfiguration a. поднимет указанный контекст и продолжит сканирование. см пункт 1
+ 84. Зачем нужен @SpringBootTest 1. Полный тест на весь контекст 2. Изменение properties 3. Тесты с определенным скоупом – пакет/конфигурация/автоскан
+ 85. Зачем нужен @TestConfiguration 1. Если нужно не прерывать сканирование @SpringBootTest 2. Изолированные тесты (игнорируется при сканировании)
+ 86. Зачем нужен @SpringBootConfiguration 1. Прерывать сканирование инициированное @SpringBootTest
+ 87. Выводы 1. Spring для Unit тестирования может быть быстрым
+ 88. Выводы 1. Spring для Unit тестирования может быть быстрым 2. Кэш контекстов – хрупкая штука
+ 89. Выводы 1. Spring для Unit тестирования может быть быстрым 2. Кэш контекстов – хрупкая штука 3. Для тестов – только @TestConfiguration
+ 90. Выводы 1. Spring для Unit тестирования может быть быстрым 2. Кэш контекстов – хрупкая штука 3. Для тестов – только @TestConfiguration 4. Изолировать группы тестов с помощью
+ 91. Выводы 1. Spring для Unit тестирования может быть быстрым 2. Кэш контекстов – хрупкая штука 3. Для тестов – только @TestConfiguration 4. Изолировать группы тестов с помощью a. выделения в пакеты b. @SpringBootConfiguration
+ 92. Выводы 1. Spring для Unit тестирования может быть быстрым 2. Кэш контекстов – хрупкая штука 3. Для тестов – только @TestConfiguration 4. Изолировать группы тестов с помощью a. выделения в пакеты (особенно для @*Test) b. @SpringBootConfiguration 5. SpringBootTest надо в основном использовать для микросервис тестов
+ 93. Выводы 1. Spring для Unit тестирования может быть быстрым 2. Кэш контекстов – хрупкая штука 3. Для тестов – только @TestConfiguration 4. Изолировать группы тестов с помощью a. выделения в пакеты b. @SpringBootConfiguration 5. SpringBootTest надо в основном использовать для микросервис тестов 6. Если есть DirtiesContext – стоит задуматься :)
+ 94. Шкала Тестов Unit Component Test Microservice Test System Test ➯ ➯ ➯ ➯ Следующий доклад
+ 95. Unit Component Microservice Что нужно Junit/Mockito @ContextConfiguration @SpringBootTest Кто управляет new Spring Spring Boot
+ 96. QA 105
+ 97. 1. @ComponentScan > @TestConfiguration > @Configuratin ! @ComponentScan находит даже @TestConfiguration 2. @DataJpaTest > @SpringBootTest 3. @DataJpaTest и @WebMvcTest должны быть в отдельных пакетах Если есть сомнения – смотри автора! Juergen Hoeller* Выводы
