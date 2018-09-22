@@ -26,10 +26,11 @@
 
 	<modules>
 		<module>assistant</module>
-		<module>yegor256-service</module>
-		<module>jbaruch-service</module>
 		<module>common</module>
-	</modules>
+		<module>jbaruch-service</module>
+        <module>mockito</module>
+		<module>yegor256-service</module>
+    </modules>
 
 	<dependencies>
 		<dependency>
